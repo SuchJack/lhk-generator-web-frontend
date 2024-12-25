@@ -2,7 +2,7 @@ import {
   getGeneratorVoByIdUsingGet,
   useGeneratorUsingPost,
 } from '@/services/backend/generatorController';
-import { useModel, useParams } from '@@/exports';
+import { Link, useModel, useParams } from '@@/exports';
 import { DownloadOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
 import {
@@ -10,21 +10,20 @@ import {
   Card,
   Col,
   Collapse,
-  Divider,
   Form,
   Image,
   Input,
   message,
   Row,
   Space,
+  Tag,
   Typography,
 } from 'antd';
 import { saveAs } from 'file-saver';
 import React, { useEffect, useState } from 'react';
-import { Link } from 'umi';
 
 /**
- * 生成器使用页面
+ * 生成器使用
  * @constructor
  */
 const GeneratorUsePage: React.FC = () => {
@@ -32,10 +31,10 @@ const GeneratorUsePage: React.FC = () => {
   const [form] = Form.useForm();
 
   const [loading, setLoading] = useState<boolean>(false);
+  const [downloading, setDownloading] = useState<boolean>(false);
   const [data, setData] = useState<API.GeneratorVO>({});
   const { initialState } = useModel('@@initialState');
   const { currentUser } = initialState ?? {};
-  const [downloading, setDownloading] = useState<boolean>(false);
 
   const models = data?.modelConfig?.models ?? [];
 
@@ -61,6 +60,24 @@ const GeneratorUsePage: React.FC = () => {
   useEffect(() => {
     loadData();
   }, [id]);
+
+  /**
+   * 标签列表视图
+   * @param tags
+   */
+  const tagListView = (tags?: string[]) => {
+    if (!tags) {
+      return <></>;
+    }
+
+    return (
+      <div style={{ marginBottom: 8 }}>
+        {tags.map((tag: string) => {
+          return <Tag key={tag}>{tag}</Tag>;
+        })}
+      </div>
+    );
+  };
 
   /**
    * 下载按钮
@@ -101,9 +118,10 @@ const GeneratorUsePage: React.FC = () => {
           <Col flex="auto">
             <Space size="large" align="center">
               <Typography.Title level={4}>{data.name}</Typography.Title>
+              {tagListView(data.tags)}
             </Space>
             <Typography.Paragraph>{data.description}</Typography.Paragraph>
-            <Divider />
+            <div style={{ marginBottom: 24 }} />
             <Form form={form}>
               {models.map((model, index) => {
                 // 是分组
@@ -143,14 +161,12 @@ const GeneratorUsePage: React.FC = () => {
                 }
 
                 return (
-                  <Form.Item key={index} label={model.fieldName} name={model.fieldName}>
+                  <Form.Item label={model.fieldName} name={model.fieldName}>
                     <Input placeholder={model.description} />
                   </Form.Item>
                 );
               })}
             </Form>
-
-            <div style={{ marginBottom: 24 }} />
             <Space size="middle">
               {downloadButton}
               <Link to={`/generator/detail/${id}`}>
