@@ -8,17 +8,12 @@ import {
 } from '@/services/backend/generatorController';
 import { useSearchParams } from '@@/exports';
 import type { ProFormInstance } from '@ant-design/pro-components';
-import {
-  ProCard,
-  ProFormSelect,
-  ProFormText,
-  ProFormTextArea,
-  StepsForm,
-} from '@ant-design/pro-components';
+import { ProCard, ProFormSelect, ProFormText, ProFormTextArea, StepsForm } from '@ant-design/pro-components';
 import { ProFormItem } from '@ant-design/pro-form';
 import { history } from '@umijs/max';
 import { message, UploadFile } from 'antd';
 import React, { useEffect, useRef, useState } from 'react';
+import ModelConfigForm from '@/pages/Generator/Add/components/ModelConfigForm';
 
 /**
  * 创建生成器页面
@@ -152,10 +147,15 @@ const GeneratorAddPage: React.FC = () => {
               <PictureUploader biz="generator_picture" />
             </ProFormItem>
           </StepsForm.StepForm>
-          <StepsForm.StepForm name="fileConfig" title="文件配置">
+          <StepsForm.StepForm name="modelConfig" title="模型配置" onFinish={async (values) => {
+              console.log(values);
+              return false;
+            }}
+          >
+            <ModelConfigForm formRef={formRef} oldData={oldData} />
             {/* todo 待补充 */}
           </StepsForm.StepForm>
-          <StepsForm.StepForm name="modelConfig" title="模型配置">
+          <StepsForm.StepForm name="fileConfig" title="文件配置">
             {/* todo 待补充 */}
           </StepsForm.StepForm>
           <StepsForm.StepForm name="dist" title="生成器文件">
